@@ -8,12 +8,21 @@ resource "azurerm_resource_group" "lab_rg" {
   location = "East US 2"
 }
 
-variable "vm_instances" {
-  description = "Map of VM names to deploy"
+variable "windows_vms" {
+  description = "Map of Windows VM names to deploy"
   type        = map(string)
   default = {
-    "vm1" = "student-vm-01"
-    "vm2" = "student-vm-02"
+    "vm1" = "win-srv-1"
+    "vm2" = "win-srv-2"
+  }
+}
+
+variable "linux_vms" {
+  description = "Map of Linux VM names to deploy"
+  type        = map(string)
+  default = {
+    "vm1" = "linux-srv-1"
+    "vm2" = "linux-srv-2"
   }
 }
 
@@ -25,19 +34,21 @@ module "networking" {
 }
 
 module "windows_server" {
+  for_each            = var.windows_vms
   source              = "./windows_server"
-  vm_name             = var.vm_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  vm_name             = "win-srv-1"
+  location            = azurerm_resource_group.lab_rg.location
+  resource_group_name = azurerm_resource_group.lab_rg.name
   nic_id              = module.networking.nic_id
 }
 
 module "linux_server" {
+  for_each            = var.linux_vms
   source              = "./linux_server"
-  vm_name             = "student-linux-server-1"
+  vm_name             = "linux-srv-1"
   resource_group_name = azurerm_resource_group.lab_rg.name
   location            = azurerm_resource_group.lab_rg.location
-  subnet_id           = module.windows_server.subnet_id
+  subnet_id           = module.networking.subnet_id
   admin_username      = "ita"
   admin_password      = "820ITAcademy"
 }

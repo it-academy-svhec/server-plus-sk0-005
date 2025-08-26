@@ -1,5 +1,5 @@
 output "subnet_id" {
-  value = azurerm_subnet.student_server_subnet.id
+  value = azurerm_subnet.subnet.id
 }
 
 output "network_security_group_id" {
@@ -11,5 +11,5 @@ output "public_ip_id" {
 }
 
 output "nic_id" {
-  value = azurerm_network_interface.student_server_nic.id
+  value = azurerm_network_interface.student_win_server_nic.id
 }
