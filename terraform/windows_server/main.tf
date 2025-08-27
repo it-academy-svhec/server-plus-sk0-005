@@ -2,9 +2,9 @@ resource "azurerm_windows_virtual_machine" "student_win_server" {
   name                  = var.vm_name
   resource_group_name   = var.resource_group_name
   location              = var.location
-  size                  = "B2s"
-  admin_username        = "ita"
-  admin_password        = "820BruceStreet"
+  size                  = "Standard_B2s"
+  admin_username        = var.admin_username
+  admin_password        = var.admin_password
   network_interface_ids = [var.nic_id]
 
   os_disk {

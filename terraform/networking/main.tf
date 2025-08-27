@@ -12,8 +12,8 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-resource "azurerm_public_ip" "ip" {
-  for_each            = merge(var.windows_vms, var.linux_vms)
+resource "azurerm_public_ip" "windows_public_ip" {
+  for_each            = var.windows_vms
   name                = "${each.value}-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -22,8 +22,18 @@ resource "azurerm_public_ip" "ip" {
   domain_name_label   = each.value
 }
 
-resource "azurerm_network_interface" "student_win_server_nic" {
-  for_each            = merge(var.windows_vms, var.linux_vms)
+resource "azurerm_public_ip" "linux_public_ip" {
+  for_each            = var.linux_vms
+  name                = "${each.value}-ip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Basic"
+  domain_name_label   = each.value
+}
+
+resource "azurerm_network_interface" "windows_nic" {
+  for_each            = var.windows_vms
   name                = "${each.value}-nic"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -32,7 +42,21 @@ resource "azurerm_network_interface" "student_win_server_nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.student_win_server_ip[each.key].id
+    public_ip_address_id          = azurerm_public_ip.windows_public_ip[each.key].id
+  }
+}
+
+resource "azurerm_network_interface" "linux_nic" {
+  for_each            = var.linux_vms
+  name                = "${each.value}-nic"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.linux_public_ip[each.key].id
   }
 }
 

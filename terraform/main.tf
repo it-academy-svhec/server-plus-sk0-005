@@ -31,24 +31,28 @@ module "networking" {
   name_prefix         = "student"
   resource_group_name = azurerm_resource_group.lab_rg.name
   location            = azurerm_resource_group.lab_rg.location
+  windows_vms         = var.windows_vms
+  linux_vms           = var.linux_vms
 }
 
 module "windows_server" {
   for_each            = var.windows_vms
   source              = "./windows_server"
-  vm_name             = "win-srv-1"
+  vm_name             = each.value
   location            = azurerm_resource_group.lab_rg.location
   resource_group_name = azurerm_resource_group.lab_rg.name
-  nic_id              = module.networking.nic_id
+  nic_id              = module.networking.windows_nic_ids[each.key]
+  admin_username      = "ita"
+  admin_password      = "820BruceStreet"
 }
 
 module "linux_server" {
   for_each            = var.linux_vms
   source              = "./linux_server"
-  vm_name             = "linux-srv-1"
+  vm_name             = each.value
   resource_group_name = azurerm_resource_group.lab_rg.name
   location            = azurerm_resource_group.lab_rg.location
-  subnet_id           = module.networking.subnet_id
+  nic_id              = module.networking.linux_nic_ids[each.key]
   admin_username      = "ita"
-  admin_password      = "820ITAcademy"
+  admin_password      = "820BruceStreet"
 }
