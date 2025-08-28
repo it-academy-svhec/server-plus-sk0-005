@@ -5,3 +5,7 @@ output "windows_nic_ids" {
 output "linux_nic_ids" {
   value = { for k, v in azurerm_network_interface.linux_nic : k => v.id }
 }
+
+output "subnet_id" {
+  value = azurerm_subnet.subnet
+}

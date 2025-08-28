@@ -35,6 +35,13 @@ module "networking" {
   linux_vms           = var.linux_vms
 }
 
+module "infra" {
+  source              = "./infra"
+  name_prefix         = "student"
+  resource_group_name = "server-infra"
+  location            = "East US 2"
+}
+
 module "windows_server" {
   for_each            = var.windows_vms
   source              = "./windows_server"
