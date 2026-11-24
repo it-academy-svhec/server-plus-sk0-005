@@ -91,6 +91,9 @@ rm -rf /etc/php /var/lib/php
 rm -rf "${APACHE_ROOT}"
 rmdir /var/www 2>/dev/null || true
 
+# Reset firewall to default settings
+ufw --force reset
+
 # Remove users/groups that might be left behind (usually removed by purge)
 userdel mysql 2>/dev/null || true
 groupdel mysql 2>/dev/null || true
